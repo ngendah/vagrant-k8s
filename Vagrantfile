@@ -27,8 +27,8 @@ Vagrant.configure("2") do |config|
   machines.each { |vm|
     config.vm.define(vm[:name], privileged: false) { |cfg|
       cfg.vm.hostname = vm[:name]
-      cfg.vm.network 'private_network', ip: vm[:ip]
-      cfg.vm.network 'forwarded_port', guest: vm[:ports][:guest], host: vm[:ports][:host] unless vm[:ports].nil?
+      cfg.vm.network :private_network, ip: vm[:ip]
+      cfg.vm.network :forwarded_port, guest: vm[:ports][:guest], host: vm[:ports][:host] unless vm[:ports].nil?
       cfg.vm.provision :ansible do |ansible| 
         ansible.playbook = 'cluster/main.yml'
         ansible.extra_vars = {
