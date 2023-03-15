@@ -1,0 +1,63 @@
+---
+- name: Initialize and setup kubernetes
+  block:
+  - name: Initialize the Kubernetes cluster using kubeadm
+    ansible.builtin.command: >
+      kubeadm init --apiserver-advertise-address={{ host_ip }} --pod-network-cidr={{ pod_network_cidr }}
+    args:
+      creates: /etc/kubernetes/admin.conf
+    notify: Restart kubelet
+  
+  - name: Setup kubeconfig for user
+    become: false
+    register: user_id
+    ansible.builtin.command: whoami
+
+  - name: Mkdir for user config
+    ansible.builtin.file:
+      path: /home/{{ user_id.stdout }}/.kube
+      state: directory
+      owner: "{{ user_id.stdout }}"
+
+  - name: Setup kubeconfig for user
+    ansible.builtin.copy:
+      force: false
+      src: /etc/kubernetes/admin.conf
+      dest: /home/{{ user_id.stdout }}/.kube/config
+      remote_src: true
+      owner: "{{ user_id.stdout }}"
+      mode: u=rwx,g-rwx,o-rwx
+
+  - name: Download kubeconfig for host user
+    become: false
+    ansible.builtin.fetch:
+      src: /home/{{ user_id.stdout }}/.kube/config
+      dest: ./kubeconfig
+      flat: true
+
+  - name: Add kubectl alias
+    become: false
+    ansible.builtin.lineinfile:
+      path: /home/{{ user_id.stdout }}/.bashrc
+      regexp: "^alias k="
+      line: "alias k=kubectl"
+
+  - name: Install Weavenet and Nginx Ingress Controller
+    become: false
+    become_user: "{{ user_id.stdout }}"
+    ansible.builtin.shell: |
+      {{ item }}
+    with_items:
+    - kubectl apply -f https://github.com/weaveworks/weave/releases/download/{{ weavenet_version }}/weave-daemonset-k8s.yaml
+    - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml
+
+- name: Generate node join command
+  block:
+  - name: Generate join command
+    ansible.builtin.command: kubeadm token create --print-join-command
+    register: join_command
+
+  - name: Copy join command to local file
+    become: false
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+

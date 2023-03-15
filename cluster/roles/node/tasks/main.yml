@@ -1,0 +1,30 @@
+---
+- name: Setup kubelet and join the cluster
+  block:
+  - name: Configure node ip
+    ansible.builtin.lineinfile:
+      path: /etc/default/kubelet
+      create: true
+      line: KUBELET_EXTRA_ARGS=--node-ip={{ host_ip }}
+    notify: Restart kubelet
+
+  - name: Setup kubeconfig for the kubelet
+    become: false
+    register: user_id
+    ansible.builtin.command: whoami
+
+  - name: Copy join command file
+    become: false
+    ansible.builtin.copy:
+      src: ./join-command
+      dest: /home/{{ user_id.stdout }}/join-command
+      mode: u+rx,g+rx
+
+  - name: Move join command file
+    ansible.builtin.command: |
+      mv /home/{{ user_id.stdout }}/join-command ~/
+
+  - name: Run kubeadm join
+    ansible.builtin.script: join-command
+    args:
+      creates: /var/lib/kubelet/config.yaml

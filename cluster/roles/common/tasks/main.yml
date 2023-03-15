@@ -1,0 +1,118 @@
+---
+- name: Install packages that allow apt to be used over HTTPS
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg-agent
+    - software-properties-common
+
+- name: Enable port forwarding
+  ansible.builtin.shell: |
+    {{ item }}
+  with_items:
+  - |
+    tee /etc/modules-load.d/k8s.conf <<EOF
+      overlay
+      br_netfilter
+    EOF
+  - modprobe overlay
+  - modprobe br_netfilter
+  - |
+    tee /etc/sysctl.d/kubernetes.conf<<EOF
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+    EOF
+  - sudo sysctl --system
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Update host name resolution
+  block:
+  - name: Extend hosts file
+    ansible.builtin.blockinfile:
+      path: /etc/hosts
+      marker: "# {mark} {{ item.domain }}"
+      block: |
+        {{ item.ip }} {{ item.domain }}
+    with_items: |
+      {{ etc_hosts }}
+
+- name: Get package architecture
+  register: dpkg_architecture
+  command: dpkg --print-architecture
+
+- name: Install Docker and Containerd
+  block:
+  - name: Add an apt signing key for Docker
+    ansible.builtin.apt_key:
+      id: 8D81803C0EBFCD88
+      url: https://download.docker.com/linux/ubuntu/gpg
+      keyring: /etc/apt/keyrings/docker.gpg
+
+  - name: Add Docker apt source
+    ansible.builtin.apt_repository:
+      repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+      state: present
+
+  - name: Install Docker and its dependecies
+    ansible.builtin.apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    notify: Disable Docker daemon
+ 
+  - name: Regenerate Containerd configuration
+    ansible.builtin.shell: |
+      containerd config default > config.toml
+      sed -E 's/(\s+SystemdCgroup\s+=\s+)false/\1true/g' config.toml > config.1.toml
+      sudo mv -f config.1.toml /etc/containerd/config.toml
+    notify: Restart Containerd 
+ 
+- name: Install Kubernetes from apt repo
+  block:
+  - name: Add an apt signing key for Kubernetes
+    register: k8s_apt_result
+    ansible.builtin.apt_key:
+      id: B53DC80D13EDEF05
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      keyring: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+      state: present
+
+  - name: Add Kubernetes apt source
+    ansible.builtin.apt_repository:
+      repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
+      state: present
+
+  - name: Install Kubernetes binaries
+    ansible.builtin.apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+      - kubelet={{ k8s_version + '-00' }}
+      - kubeadm={{ k8s_version + '-00' }}
+      - kubectl={{ k8s_version + '-00' }}
