@@ -1,10 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -18,8 +14,9 @@ Vagrant.configure("2") do |config|
   machines = [
     {name: 'control01', ip: '192.168.56.10', ports: { guest: 6443, host: 6443 } },
     {name: 'node01', ip: '192.168.56.11' },
+#    {name: 'node02', ip: '192.168.56.12' },
   ]
-  config.vm.provider 'virtualbox' do |vb|
+  config.vm.provider :virtualbox do |vb|
     vb.cpus = 2
     vb.memory = '2048'
   end
@@ -40,10 +37,12 @@ Vagrant.configure("2") do |config|
         }
         ansible.groups = {
           'control': ['control01'],
-          'node': ['node01'],
+          'node': [
+            'node01',
+#            'node02',
+          ],
         }
       end
     }
   }
-
 end
