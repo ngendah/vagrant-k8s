@@ -95,8 +95,7 @@
  
 - name: Install Kubernetes from apt repo
   block:
-  - name: Add an apt signing key for Kubernetes
-    register: k8s_apt_result
+  - name: Add Kubernetes apt signing key
     ansible.builtin.apt_key:
       id: B53DC80D13EDEF05
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
@@ -118,4 +117,28 @@
       - kubelet={{ k8s_version + '-00' }}
       - kubeadm={{ k8s_version + '-00' }}
       - kubectl={{ k8s_version + '-00' }}
+
+- name: Install Falco from its apt source
+  block:
+  - name: Add Falco apt signing key
+    ansible.builtin.apt_key:
+      url: https://falco.org/repo/falcosecurity-packages.asc
+      state: present
+
+  - name: Add Falco apt source
+    ansible.builtin.apt_repository:
+      repo: "deb https://download.falco.org/packages/deb stable main"
+      state: present
+
+  - name: Remove dialog
+    ansible.builtin.apt:
+      name: dialog
+      state: absent
+      update_cache: yes
+
+  - name: Install Falco
+    ansible.builtin.apt:
+      name: falco
+      state: present
+      update_cache: yes
 
