@@ -14,28 +14,49 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 * Port `6443` is free on your local host, see troubleshooting, port forwarding.
 
+
 ## Getting started
 
 ```commandline
-  vagrant up --provider=virtualbox --provision
+  vagrant up --provider virtualbox --provision
 ```
 
-This should take a short while, depending on your network speed. On successful completion you should have a cluster running, with guest port 6443 forwarded to your localhost 6443.
+This should take a short while. On successful completion you should have a cluster running, with guest port 6443 forwarded to your localhost 6443.
 
 On the cluster directory a copy of kube-config will also have been downloaded. It can be used to authenticate on cluster and execute commands.
 
 For example, to check node status;
 
 ```commandline
-  kubectl get nodes --kubeconfig=cluster/kubeconfig
+  kubectl --kubeconfig ./cluster/kubeconfig get nodes
 ```
 
-Alternately you can ssh into the control node and execute commands;
+If kubectl is not installed you can ssh into the control node and execute commands;
 
 ```commandline
   vagrant ssh control01
   kubectl get nodes
 ```
+
+
+## Other installed and enabled features
+
+#### Container runtime
+
+* [gVisor](https://gvisor.dev/docs/)
+
+  Can be enabled with `runtimeClassName: gvisor`
+
+#### Policy
+
+* [Gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
+
+#### Security
+
+* [AppArmor](https://ubuntu.com/server/docs/security-apparmor)
+
+* [Falco](https://falco.org/docs/)
+
 
 ## Troubleshooting
 

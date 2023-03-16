@@ -43,7 +43,7 @@
       regexp: "^alias k="
       line: "alias k=kubectl"
 
-  - name: Install Weavenet and Nginx Ingress Controller
+  - name: Install Weavenet, Nginx Ingress Controller and Gatekeeper
     become: false
     become_user: "{{ user_id.stdout }}"
     ansible.builtin.shell: |
@@ -52,6 +52,19 @@
     - kubectl apply -f https://github.com/weaveworks/weave/releases/download/{{ weavenet_version }}/weave-daemonset-k8s.yaml
     - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml 
     - kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
+
+  - name: Install gVisor runtime class
+    when: "(no_gvisor is undefined) or (no_gvisor|bool == false)"
+    become: false
+    become_user: "{{ user_id.stdout }}"
+    ansible.builtin.shell: |
+     kubectl apply -f - <<EOF
+      apiVersion: node.k8s.io/v1
+      kind: RuntimeClass
+      metadata:
+        name: gvisor
+      handler: runsc
+     EOF
 
 - name: Generate node join command
   block:
