@@ -119,6 +119,7 @@
       - kubectl={{ k8s_version + '-00' }}
 
 - name: Install Falco from its apt source
+  when: "(no_falco is undefined) or (no_falco|bool == false)"
   block:
   - name: Add Falco apt signing key
     ansible.builtin.apt_key:
@@ -139,6 +140,26 @@
   - name: Install Falco
     ansible.builtin.apt:
       name: falco
+      state: present
+      update_cache: yes
+
+- name: Install gVisor
+  when: "(no_gvisor is undefined) or (no_gvisor|bool == false)"
+  block:
+  - name: Add gVisor apt signing key
+    ansible.builtin.apt_key:
+      url: https://gvisor.dev/archive.key
+      keyring: /usr/share/keyrings/gvisor-archive-keyring.gpg
+      state: present
+
+  - name: Add gVisor apt source
+    ansible.builtin.apt_repository:
+      repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/gvisor-archive-keyring.gpg] https://storage.googleapis.com/gvisor/releases release main"
+      state: present
+
+  - name: Install gVisor
+    ansible.builtin.apt:
+      name: runsc
       state: present
       update_cache: yes
 
