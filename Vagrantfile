@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
       ports: [{ guest: 6443, host: 6443, auto_correct: false },],
     },
     {name: 'node01', ip: '192.168.56.11' },
-    {name: 'node02', ip: '192.168.56.12' },
+#    {name: 'node02', ip: '192.168.56.12' },
   ]
   config.vm.provider :virtualbox do |vb|
     vb.cpus = 2
@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
           'control': ['control01'],
           'node': [
             'node01',
-            'node02',
+#            'node02',
           ],
         }
       end

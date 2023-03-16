@@ -36,6 +36,13 @@ For example, to check node status;
   kubectl --kubeconfig ./cluster/kubeconfig get nodes
 ```
 
+or
+
+```commandline
+  export KUBECONFIG=$(pwd)/cluster/kubeconfig
+  kubectl get nodes
+```
+
 If kubectl is not installed you can ssh into the control node and execute commands;
 
 ```commandline
@@ -46,11 +53,11 @@ If kubectl is not installed you can ssh into the control node and execute comman
 
 ## Other installed and enabled features
 
-#### Container runtime
+#### Container runtimes
 
 * [gVisor](https://gvisor.dev/docs/)
 
-  Can be enabled with `runtimeClassName: gvisor`
+  Its runtime class name is `gvisor`
 
 #### Policy
 
