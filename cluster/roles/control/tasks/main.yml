@@ -51,6 +51,7 @@
     with_items:
     - kubectl apply -f https://github.com/weaveworks/weave/releases/download/{{ weavenet_version }}/weave-daemonset-k8s.yaml
     - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml 
+    - kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
 
 - name: Generate node join command
   block:
