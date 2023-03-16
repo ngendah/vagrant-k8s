@@ -1,3 +1,4 @@
 .vagrant/
 join-command
 kube*
+*.yaml

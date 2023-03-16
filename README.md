@@ -3,6 +3,8 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 ## Requirements:
 
+#### Linux
+
 * [Vagrant](https://developer.hashicorp.com/vagrant/docs/installation) installed on your local host.
 
   At the moment the vagrant script requires virtualbox be also installed, but this requirement
@@ -14,6 +16,9 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 * Port `6443` is free on your local host, see troubleshooting, port forwarding.
 
+#### Windows
+
+Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant and Ansible](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_local) run the playbooks on the guest virtual machine.
 
 ## Getting started
 
@@ -62,9 +67,22 @@ If kubectl is not installed you can ssh into the control node and execute comman
 
 ### Port forwarding
 
-* You can change the default localhost forwarded port on the `Vagrantfile`.
+* You can change the default local host forwarded port on the `Vagrantfile` by editing the code fragment.
 
-* If the forwared port is changed on the vagrant file and provisioning has successfully completed, the port change should be applied to the donwloaded kube-config file, `cluster/kubeconfig`.
+  ```ruby
+  ports: [ ..., host: 6443, ... ],
+  ```
+
+* You can also enable vagrant port mapping [auto-correction feature](https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports).
+
+* If the forwared port is changed or has changed and provisioning is successfull,
+  the same change should be applied to the donwloaded kube-config file, `cluster/kubeconfig`.
+
+* You can disable port forwarding by removing the code fragment;
+
+  ```ruby
+  ports: [ ... ],
+  ```
 
 ## Alternatives
 

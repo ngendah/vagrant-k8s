@@ -12,7 +12,10 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
 
   machines = [
-    {name: 'control01', ip: '192.168.56.10', ports: { guest: 6443, host: 6443 } },
+    {
+      name: 'control01', ip: '192.168.56.10',
+      ports: [{ guest: 6443, host: 6443, auto_correct: false },],
+    },
     {name: 'node01', ip: '192.168.56.11' },
     {name: 'node02', ip: '192.168.56.12' },
   ]
@@ -20,7 +23,6 @@ Vagrant.configure("2") do |config|
     vb.cpus = 2
     vb.memory = '2048'
   end
-  config.vm.synced_folder './data', '/vagrant_data', disabled: true
   etc_hosts = machines.collect{ |vm|
     { domain: vm[:name], ip: vm[:ip] }
   }
@@ -28,7 +30,14 @@ Vagrant.configure("2") do |config|
     config.vm.define(vm[:name], privileged: false) { |cfg|
       cfg.vm.hostname = vm[:name]
       cfg.vm.network :private_network, ip: vm[:ip]
-      cfg.vm.network :forwarded_port, guest: vm[:ports][:guest], host: vm[:ports][:host] unless vm[:ports].nil?
+      cfg.vm.synced_folder './cluster', '.', disabled: true
+      (vm[:ports] || []).each { |port|
+        cfg.vm.network :forwarded_port,
+          guest: port[:guest],
+          host: port[:host],
+          protocol: :tcp,
+          auto_correct: port[:auto_correct]
+      }
       cfg.vm.provision :ansible do |ansible| 
         ansible.playbook = 'cluster/main.yml'
         ansible.extra_vars = {
