@@ -10,4 +10,7 @@
     name: containerd
     state: restarted
 
-
+- name: Stop AppArmor
+  ansible.builtin.service:
+    name: apparmor
+    state: stopped

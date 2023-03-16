@@ -2,5 +2,11 @@
 - name: Restart kubelet
   ansible.builtin.service:
     name: kubelet
+    enabled: yes
     state: restarted
 
+- name: Restart AppArmor
+  ansible.builtin.service:
+    name: apparmor
+    enabled: yes
+    state: restarted

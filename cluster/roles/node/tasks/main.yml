@@ -1,5 +1,6 @@
 ---
 - name: Setup kubelet and join the cluster
+  notify: Restart AppArmor
   block:
   - name: Configure node ip
     ansible.builtin.lineinfile:
