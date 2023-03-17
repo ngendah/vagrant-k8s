@@ -13,8 +13,6 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management) installed on your local host. This is optional.
 
-* Port `6443` is free on your local host, see troubleshooting port forwarding.
-
 #### Windows
 
 Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant and Ansible](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_local) run the playbooks on the guest virtual machine.
@@ -25,7 +23,7 @@ Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant
   vagrant up --provider virtualbox --provision
 ```
 
-This should take a short while, but upon successful completion you should have a cluster running, with guest port 6443 forwarded to your local host 6443.
+This should take a short while, but upon successful completion you should have a cluster running, with should be reachable via the assigned private ip, on port 6443.
 
 In addition, a copy of `kubeconfig` will have been downloaded into the cluster directory, `cluster/`. It can be used for authentication on the cluster for execution of commands.
 
@@ -67,28 +65,6 @@ If kubectl is not installed you can ssh into the control node and run commands;
 * [AppArmor](https://ubuntu.com/server/docs/security-apparmor)
 
 * [Falco](https://falco.org/docs/)
-
-
-## Troubleshooting
-
-### Port forwarding
-
-* You can change the default local host forwarded port on the `Vagrantfile` by editing the code fragment.
-
-  ```ruby
-  ports: [ ..., host: 6443, ... ],
-  ```
-
-* You can also enable vagrant port mapping [auto-correction feature](https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports).
-
-* If the forwared port is changed or has changed and provisioning is successfull,
-  the same change should be applied to the donwloaded "kube" config file, `cluster/kubeconfig`.
-
-* Port forwarding can be disabled by removing the code fragment;
-
-  ```ruby
-  ports: [ ... ],
-  ```
 
 ## Alternatives
 
