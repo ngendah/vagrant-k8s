@@ -12,11 +12,8 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
 
   machines = [
-    {
-      name: 'control01', ip: '192.168.56.10',
-      ports: [{ guest: 6443, host: 6443, auto_correct: false },],
-    },
-    {name: 'node01', ip: '192.168.56.11' },
+    { name: 'control01', ip: '192.168.56.10' },
+    { name: 'node01', ip: '192.168.56.11' },
 #    {name: 'node02', ip: '192.168.56.12' },
   ]
   config.vm.provider :virtualbox do |vb|
@@ -31,19 +28,12 @@ Vagrant.configure("2") do |config|
       cfg.vm.hostname = vm[:name]
       cfg.vm.network :private_network, ip: vm[:ip]
       cfg.vm.synced_folder './cluster', '.', disabled: true
-      (vm[:ports] || []).each { |port|
-        cfg.vm.network :forwarded_port,
-          guest: port[:guest],
-          host: port[:host],
-          protocol: :tcp,
-          auto_correct: port[:auto_correct]
-      }
       cfg.vm.provision :ansible do |ansible| 
         ansible.playbook = 'cluster/main.yml'
         ansible.extra_vars = {
           host_ip: vm[:ip],
           etc_hosts: etc_hosts,
-          no_falco: false,
+          no_falco: true,
           no_gvisor: false,
         }
         ansible.groups = {
