@@ -7,14 +7,13 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 * [Vagrant](https://developer.hashicorp.com/vagrant/docs/installation) installed on your local host.
 
-  At the moment the vagrant script requires virtualbox be also installed, but this requirement
-  can easily be changed on the script, `Vagrantfile`.
+  At the moment the vagrant script requires virtualbox be installed. However this can easily be changed on the script, `Vagrantfile`.
 
 * [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) installed on your local host.
 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management) installed on your local host. This is optional.
 
-* Port `6443` is free on your local host, see troubleshooting, port forwarding.
+* Port `6443` is free on your local host, see troubleshooting port forwarding.
 
 #### Windows
 
@@ -26,9 +25,9 @@ Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant
   vagrant up --provider virtualbox --provision
 ```
 
-This should take a short while. On successful completion you should have a cluster running, with guest port 6443 forwarded to your localhost 6443.
+This should take a short while, but upon successful completion you should have a cluster running, with guest port 6443 forwarded to your local host 6443.
 
-On the cluster directory a copy of kube-config will also have been downloaded. It can be used to authenticate on cluster and execute commands.
+In addition, a copy of `kubeconfig` will have been downloaded into the cluster directory, `cluster/`. It can be used for authentication on the cluster for execution of commands.
 
 For example, to check node status;
 
@@ -43,7 +42,7 @@ or
   kubectl get nodes
 ```
 
-If kubectl is not installed you can ssh into the control node and execute commands;
+If kubectl is not installed you can ssh into the control node and run commands;
 
 ```commandline
   vagrant ssh control01
@@ -83,9 +82,9 @@ If kubectl is not installed you can ssh into the control node and execute comman
 * You can also enable vagrant port mapping [auto-correction feature](https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports).
 
 * If the forwared port is changed or has changed and provisioning is successfull,
-  the same change should be applied to the donwloaded kube-config file, `cluster/kubeconfig`.
+  the same change should be applied to the donwloaded "kube" config file, `cluster/kubeconfig`.
 
-* You can disable port forwarding by removing the code fragment;
+* Port forwarding can be disabled by removing the code fragment;
 
   ```ruby
   ports: [ ... ],
