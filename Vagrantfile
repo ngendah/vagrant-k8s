@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
         ansible.extra_vars = {
           host_ip: vm[:ip],
           etc_hosts: etc_hosts,
-          no_falco: true,
+          no_falco: false,
           no_gvisor: false,
         }
         ansible.groups = {
