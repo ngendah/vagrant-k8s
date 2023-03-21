@@ -35,6 +35,7 @@ Vagrant.configure("2") do |config|
           etc_hosts: etc_hosts,
           no_falco: false,
           no_gvisor: false,
+          no_metrics_server: false,
         }
         ansible.groups = {
           'control': ['control01'],

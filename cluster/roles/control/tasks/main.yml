@@ -53,6 +53,19 @@
     - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml 
     - kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
 
+  - name: Install Metrics server
+    become: false
+    become_user: "{{ user_id.stdout }}"
+    when: "(no_metrics_server is undefined) or (no_metrics_server|bool == false)"
+    block:
+    - name: Upload Metrics server manifests
+      ansible.builtin.copy:
+        src: metrics-server
+        dest: ~/
+
+    - name: Install Metrics server
+      ansible.builtin.shell: kubectl apply -f metrics-server/
+
   - name: Install gVisor runtime class
     when: "(no_gvisor is undefined) or (no_gvisor|bool == false)"
     become: false

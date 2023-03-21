@@ -79,6 +79,10 @@ For additional details on these commands and others, please consult the [Vagrant
 
 ## Installed features
 
+### Metrics
+
+* [Metrics server](https://github.com/kubernetes-sigs/metrics-server)
+
 #### Container runtimes
 
 * [gVisor](https://gvisor.dev/docs/)
