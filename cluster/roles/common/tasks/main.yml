@@ -13,6 +13,7 @@
     - gnupg-agent
     - software-properties-common
     - apparmor-profiles
+    - net-tools
 
 - name: Enable port forwarding
   ansible.builtin.shell: |
