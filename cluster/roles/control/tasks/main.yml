@@ -50,8 +50,14 @@
       {{ item }}
     with_items:
     - kubectl apply -f https://github.com/weaveworks/weave/releases/download/{{ weavenet_version }}/weave-daemonset-k8s.yaml
-    - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml 
-    - kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
+    - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml
+
+  - name: Install Gatekeeper
+    become: false
+    become_user: "{{ user_id.stdout }}"
+    when: "(no_gatekeer is undefined) or (no_gatekeeperbool == false)"
+    ansible.builtin.shell: |
+      kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
 
   - name: Install Metrics server
     become: false
