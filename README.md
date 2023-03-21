@@ -1,5 +1,13 @@
 Provision a Kubernetes cluster with Ansible and Vagrant
-===========================================
+==============================================
+
+Why?
+
+* Want to test out different container runtimes.
+
+* Want to test out tools such as AppArmor, Falco e.tc.
+
+* Clean and extensible Ansible scripts.
 
 ## Requirements:
 
@@ -7,7 +15,7 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 * [Vagrant](https://developer.hashicorp.com/vagrant/docs/installation) installed on your local host.
 
-  At the moment the vagrant script requires virtualbox be installed. However this can easily be changed on the script, `Vagrantfile`.
+  At the moment the vagrant script requires [Virtualbox](https://www.virtualbox.org/wiki/Documentation) be installed. However this can easily be changed on the script, `Vagrantfile`.
 
 * [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) installed on your local host.
 
@@ -23,7 +31,7 @@ Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant
   vagrant up --provider virtualbox --provision
 ```
 
-This should take a short while, but upon successful completion you should have a cluster running, with should be reachable via the assigned private ip, on port 6443.
+This should take a short while, but upon successful completion you should have a cluster running, which is reachable via the assigned private ip, on port 6443.
 
 In addition, a copy of `kubeconfig` will have been downloaded into the cluster directory, `cluster/`. It can be used for authentication on the cluster for execution of commands.
 
@@ -40,15 +48,36 @@ or
   kubectl get nodes
 ```
 
-If kubectl is not installed you can ssh into the control node and run commands;
+If kubectl is not installed on your local host, you can also ssh into the control node and run commands;
 
 ```commandline
   vagrant ssh control01
   kubectl get nodes
 ```
 
+After successful provisioning of the cluster, you can manage the nodes as follows;
 
-## Other installed and enabled features
+* stopping the nodes
+
+```commandline
+  vagrant halt
+```
+
+* restarting the nodes
+
+```commandline
+  vagrant up
+```
+
+* destroying the nodes
+
+```commandline
+  vagrant destroy
+```
+
+For additional details on these commands and others, please consult the [Vagrant documentation](https://developer.hashicorp.com/vagrant/docs).
+
+## Installed features
 
 #### Container runtimes
 
@@ -67,5 +96,7 @@ If kubectl is not installed you can ssh into the control node and run commands;
 * [Falco](https://falco.org/docs/)
 
 ## Alternatives
+
+* [k3d](https://k3d.io/v5.4.9/)
 
 * [kind](https://github.com/kubernetes-sigs/kind)

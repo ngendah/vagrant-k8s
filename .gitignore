@@ -1,4 +1,5 @@
 .vagrant/
 join-command
-kube*
-*.yaml
+kubeconfig
+dashboard-token
+cluster/dashboard.html
