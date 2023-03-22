@@ -36,7 +36,7 @@
   - name: Install Kubernetes dashboard
     when: "(no_dashboard is undefined) or (no_dashboard|bool == false)"
     block:
-    - name: Register ingress controller ready wait listener
+    - name: Wait for ingress controller to be ready
       register: ingress_ready
       ansible.builtin.command: |
         kubectl -ningress-nginx get deploy ingress-nginx-controller -ojsonpath="{.status.readyReplicas}"

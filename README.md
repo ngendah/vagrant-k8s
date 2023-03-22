@@ -85,13 +85,13 @@ For additional details on these commands and others, consult [Vagrant documentat
 
 ## Installed features
 
-### Kubernetes Dashboard
+#### Kubernetes Dashboard
 
 * [Kubernetes dashboard](https://github.com/kubernetes/dashboard)
 
   In order to facilitate dashboard access the provisioner will create a dashboard stub file on the cluster directory, `cluster`, together with a corresponding login token.
 
-### Metrics
+#### Metrics
 
 * [Metrics server](https://github.com/kubernetes-sigs/metrics-server)
 
