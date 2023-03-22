@@ -7,7 +7,7 @@ Why?
 
 * Want to test out tools such as AppArmor, Falco e.tc.
 
-* Clean and extensible Ansible scripts.
+* Want clean and extensible Ansible scripts.
 
 ## Requirements:
 
@@ -28,7 +28,7 @@ Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant
 ## Getting started
 
 ```commandline
-  vagrant up --provider virtualbox --provision
+  vagrant up --provision --provider virtualbox
 ```
 
 This should take a short while, but upon successful completion you should have a cluster running, which is reachable via the assigned private ip, on port 6443.
@@ -75,9 +75,21 @@ After successful provisioning of the cluster, you can manage the nodes as follow
   vagrant destroy
 ```
 
-For additional details on these commands and others, please consult the [Vagrant documentation](https://developer.hashicorp.com/vagrant/docs).
+* if a node is running to re-provision it
+
+```commandline
+  vagrant provision [node name/virtual machine name]
+```
+
+For additional details on these commands and others, consult [Vagrant documentation](https://developer.hashicorp.com/vagrant/docs).
 
 ## Installed features
+
+### Kubernetes Dashboard
+
+* [Kubernetes dashboard](https://github.com/kubernetes/dashboard)
+
+  The provisioner will create a html stub file to help access the dashboard on the cluster directory, `cluster` and the corresponding login token.
 
 ### Metrics
 
@@ -98,6 +110,7 @@ For additional details on these commands and others, please consult the [Vagrant
 * [AppArmor](https://ubuntu.com/server/docs/security-apparmor)
 
 * [Falco](https://falco.org/docs/)
+
 
 ## Alternatives
 

@@ -13,3 +13,9 @@
   become: yes
   roles:
   - node
+
+- hosts: setup
+  become: yes
+  roles:
+  - setup
+

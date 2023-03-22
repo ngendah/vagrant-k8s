@@ -76,7 +76,6 @@
       state: present
 
   - name: Install Docker and its dependecies
-    notify: Disable Docker daemon
     ansible.builtin.apt:
       name: "{{ packages }}"
       state: present
@@ -86,13 +85,14 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io 
+    notify: Disable Docker daemon
  
   - name: Upload Containerd configuration
-    notify: Restart Containerd 
     ansible.builtin.copy:
       src: config.toml
       dest: /etc/containerd/config.toml
       mode: u=rwx,g=rx,o=rx
+    notify: Restart Containerd 
 
 - name: Install Kubernetes from apt repo
   block:
