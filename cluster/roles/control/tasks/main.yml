@@ -1,13 +1,14 @@
 ---
 - name: Initialize Kubernetes
-  notify: Restart AppArmor
   block:
   - name: Initialize the Kubernetes cluster using kubeadm
     ansible.builtin.command: >
       kubeadm init --apiserver-advertise-address={{ host_ip }} --pod-network-cidr={{ pod_network_cidr }}
     args:
       creates: /etc/kubernetes/admin.conf
-    notify: Restart kubelet
+    notify:
+    - Restart kubelet
+    - Restart AppArmor
 
 - name: Generate node join command
   block:

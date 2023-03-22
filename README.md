@@ -17,7 +17,8 @@ Why?
 
   At the moment the vagrant script requires [Virtualbox](https://www.virtualbox.org/wiki/Documentation) be installed. However this can easily be changed on the script, `Vagrantfile`.
 
-* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) installed on your local host.
+* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) version >= 2.10 installed on your local host.
+
 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management) installed on your local host. This is optional.
 

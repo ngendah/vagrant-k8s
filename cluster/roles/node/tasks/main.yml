@@ -1,13 +1,14 @@
 ---
 - name: Setup kubelet and join the cluster
-  notify: Restart AppArmor
   block:
   - name: Configure node ip
     ansible.builtin.lineinfile:
       path: /etc/default/kubelet
       create: true
       line: KUBELET_EXTRA_ARGS=--node-ip={{ host_ip }}
-    notify: Restart kubelet
+    notify:
+    - Restart kubelet
+    - Restart AppArmor
 
   - name: Setup kubeconfig for the kubelet
     become: false
