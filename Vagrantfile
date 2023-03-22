@@ -29,14 +29,16 @@ Vagrant.configure("2") do |config|
       cfg.vm.network :private_network, ip: vm[:ip]
       cfg.vm.synced_folder './cluster', '.', disabled: true
       cfg.vm.provision :ansible do |ansible| 
+        ansible.compatibility_mode = "2.0"
         ansible.playbook = 'cluster/main.yml'
         ansible.extra_vars = {
           host_ip: vm[:ip],
           etc_hosts: etc_hosts,
-          no_falco: false,
+          no_falco: true,
           no_gvisor: false,
           no_gatekeeper: false,
           no_metrics_server: false,
+          no_dashboard: false,
         }
         ansible.groups = {
           'control': ['control01'],
@@ -44,6 +46,7 @@ Vagrant.configure("2") do |config|
             'node01',
 #            'node02',
           ],
+          'setup': ['node01'],
         }
       end
     }

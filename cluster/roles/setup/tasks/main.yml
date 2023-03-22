@@ -1,0 +1,115 @@
+---
+- name: Setup kubeconfig for user
+  become: false
+  register: user_id
+  ansible.builtin.command: whoami
+
+- name: Setup and install various features
+  become: false
+  become_user: "{{ user_id.stdout }}"
+  block:
+  - name: Mkdir for user config
+    ansible.builtin.file:
+      path: ~/.kube
+      state: directory
+
+  - name: Copy kubeconfig file
+    ansible.builtin.copy:
+      src: ./kubeconfig
+      dest: ~/.kube/config 
+
+  - name: Install gVisor runtime class
+    when: "(no_gvisor is undefined) or (no_gvisor|bool == false)"
+    ansible.builtin.shell: |
+     kubectl apply -f - <<EOF
+      apiVersion: node.k8s.io/v1
+      kind: RuntimeClass
+      metadata:
+        name: gvisor
+      handler: runsc
+     EOF
+
+  - name: Install Nginx ingress controller
+    ansible.builtin.shell: |
+      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml
+ 
+  - name: Install Kubernetes dashboard
+    when: "(no_dashboard is undefined) or (no_dashboard|bool == false)"
+    block:
+    - name: Register ingress controller ready wait listener
+      register: ingress_ready
+      ansible.builtin.command: |
+        kubectl -ningress-nginx get deploy ingress-nginx-controller -ojsonpath="{.status.readyReplicas}"
+      retries: 100
+      delay: 10
+      until:
+      - ingress_ready.stdout|int >= 1
+
+    - name: Debug
+      debug:
+        msg: "{{ ingress_ready }}"
+
+    - name: Upload dashboard manifests
+      ansible.builtin.copy:
+        src: dashboard
+        dest: ~/ 
+
+    - name: Install dashboard
+      ansible.builtin.shell: |
+        kubectl apply -f dashboard/
+
+    - name: Get ingress node port
+      register: ingress_nodeport
+      ansible.builtin.command: |
+        kubectl -ningress-nginx get svc ingress-nginx-controller -ojsonpath='{.spec.ports[?(@.name=="https")].nodePort}'
+
+    - name: Debug
+      debug:
+        msg: "{{ ingress_nodeport }}"
+
+    - name: Get control plane ip
+      register: controlplane_ip
+      ansible.builtin.command: |
+        kubectl get nodes -l node-role.kubernetes.io/control-plane -ojsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}'
+
+    - name: Debug
+      debug:
+        msg: "{{ controlplane_ip }}"
+
+    - name: Generate dashboard html stub file
+      ansible.builtin.template:
+        src: dashboard.html
+        dest: ~/dashboard.html
+      vars:
+        node_ip: "{{ controlplane_ip.stdout }}"
+        node_port: "{{ ingress_nodeport.stdout }}"
+
+    - name: Generate dashboard login token
+      register: dashboard_token
+      ansible.builtin.shell: kubectl create token admin-user
+
+    - name: Download dashboard html stub file
+      ansible.builtin.fetch:
+        src: ~/dashboard.html
+        dest: ./dashboard.html
+        flat: yes
+
+    - name: Download dashboard login token
+      local_action: copy content="{{ dashboard_token.stdout_lines[0] }}" dest="./dashboard-token"
+
+  - name: Install Gatekeeper
+    when: "(no_gatekeer is undefined) or (no_gatekeeperbool == false)"
+    ansible.builtin.shell: |
+      kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
+
+  - name: Install Metrics server
+    when: "(no_metrics_server is undefined) or (no_metrics_server|bool == false)"
+    block:
+    - name: Upload Metrics server manifests
+      ansible.builtin.copy:
+        src: metrics-server
+        dest: ~/
+
+    - name: Install Metrics server
+      ansible.builtin.shell: kubectl apply -f metrics-server/
+
