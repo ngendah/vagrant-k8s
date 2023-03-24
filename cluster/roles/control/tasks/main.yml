@@ -64,3 +64,15 @@
     with_items:
     - kubectl apply -f https://github.com/weaveworks/weave/releases/download/{{ weavenet_version }}/weave-daemonset-k8s.yaml
 
+  - name: Install gVisor runtime class
+    become: false
+    when: "(no_gvisor is undefined) or (no_gvisor|bool == false)"
+    ansible.builtin.shell: |
+     kubectl apply -f - <<EOF
+      apiVersion: node.k8s.io/v1
+      kind: RuntimeClass
+      metadata:
+        name: gvisor
+      handler: runsc
+     EOF
+
