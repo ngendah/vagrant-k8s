@@ -90,7 +90,8 @@ For additional details on these commands and others, consult [Vagrant documentat
 
 * [Kubernetes dashboard](https://github.com/kubernetes/dashboard)
 
-  In order to facilitate dashboard access the provisioner will create a dashboard stub file on the cluster directory, `cluster`, together with a corresponding login token.
+  In order to facilitate dashboard access the provisioner will create a dashboard html stub file on the cluster directory, `cluster`, together with a corresponding login token.
+  From a file browser you can double-click on the stub file to open the dashboard.
 
 #### Metrics
 
