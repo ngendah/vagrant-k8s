@@ -1,0 +1,4 @@
+*.html linguist-documentation
+*.md linguist-documentation
+*.yml linguist-detectable
+
