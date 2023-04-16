@@ -4,7 +4,6 @@
     name: "{{ packages }}"
     state: present
     update_cache: yes
-  notify: Stop AppArmor
   vars:
     packages:
     - apt-transport-https
@@ -14,6 +13,35 @@
     - software-properties-common
     - apparmor-profiles
     - net-tools
+    - ipvsadm
+    - ipset
+    - conntrack
+  notify:
+  - Stop AppArmor
+
+- name: Install IPVS
+  when: "(no_ipvs is undefined) or (no_ipvs|bool == false)"
+  block:
+  - name: Install ipvs packages
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+      - ipvsadm
+      - ipset
+      - conntrack
+
+  - name: Enable ipvs modules
+    ansible.builtin.shell: |
+      modprobe {{ item }}
+    with_items:
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+    - nf_conntrack
 
 - name: Enable port forwarding
   ansible.builtin.shell: |
