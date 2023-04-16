@@ -5,7 +5,7 @@ Why?
 
 * Want to test out different container runtimes.
 
-* Want to test out tools such as AppArmor, Falco e.tc.
+* Want to test out tools such as IPVS, AppArmor, Falco e.tc.
 
 * Want clean and extensible Ansible scripts.
 
@@ -32,7 +32,7 @@ Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant
   vagrant up --provision --provider virtualbox
 ```
 
-This should take a short while, but upon successful completion you should have a cluster running, which is reachable via the assigned private ip, on port 6443.
+This should take a short while, but upon successful completion you should have a cluster running, reachable via the assigned private ip, on port 6443.
 
 In addition, a copy of `kubeconfig` will have been downloaded into the cluster directory, `cluster/`. It can be used for authentication on the cluster for execution of commands.
 
@@ -106,6 +106,24 @@ For additional details on these commands and others, consult [Vagrant documentat
 #### Policy
 
 * [Gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
+
+#### IPVS
+
+* IPVS is installed by default but not enabled.
+
+  To enable and use [IPVS](https://kubernetes.io/docs/reference/config-api/kube-proxy-config.v1alpha1/):
+
+  1. Edit `kube-proxy` config-map and set its `mode` to `ipvs`:
+      
+    ```commandline
+      kubectl -nkube-system edit cm kube-proxy
+    ```
+
+  2. Re-create all the `kube-proxy` pods:
+
+    ```commandline
+      kubectl -nkube-system delete po -l k8s-app=kube-proxy
+    ```
 
 #### Security
 
