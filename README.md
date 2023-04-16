@@ -7,7 +7,7 @@ Why?
 
 * Want to test out tools such as IPVS, AppArmor, Falco e.tc.
 
-* Want clean and extensible Ansible scripts.
+* Want clear, understandable and extensible Ansible scripts.
 
 ## Requirements:
 
