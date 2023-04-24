@@ -147,6 +147,15 @@
       - kubeadm={{ k8s_version + '-00' }}
       - kubectl={{ k8s_version + '-00' }}
 
+  - name: Hold installed Kubernetes binaries
+    ansible.builtin.dpkg_selections:
+      name: "{{ item }}"
+      selection: hold
+    with_items:
+    - kubelet
+    - kubeadm
+    - kubectl
+
 - name: Install Falco from its apt source
   when: "(no_falco is undefined) or (no_falco|bool == false)"
   block:
