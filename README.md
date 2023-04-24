@@ -7,7 +7,7 @@ Why?
 
 * Want to test out tools such as IPVS, AppArmor, Falco e.tc.
 
-* Want clear, understandable and extensible Ansible scripts.
+* Want clear, understandable and extensible Ansible playbooks.
 
 ## Requirements:
 
@@ -49,7 +49,7 @@ or
   kubectl get nodes
 ```
 
-If kubectl is not installed on your local host, you can also ssh into the control node and run commands;
+If kubectl is not installed on your local host, you can ssh into the control node and run commands;
 
 ```commandline
   vagrant ssh control01
