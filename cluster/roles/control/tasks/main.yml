@@ -1,4 +1,10 @@
 ---
+- name: Install etcdctl
+  apt:
+    name: "etcd-client"
+    state: present
+    update_cache: yes
+
 - name: Initialize Kubernetes
   block:
   - name: Initialize the Kubernetes cluster using kubeadm
