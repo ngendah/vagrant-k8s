@@ -18,6 +18,16 @@
       src: ./kubeconfig
       dest: ~/.kube/config 
 
+  - name: Wait for apiserver to be ready
+    register: apiserver_ready
+    ansible.builtin.command: "kubectl get nodes"
+    retries: 100
+    delay: 10
+
+  - name: Debug
+    debug:
+      msg: "{{ apiserver_ready }}"
+
   - name: Install Nginx ingress controller
     ansible.builtin.shell: |
       kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-{{ nginx_ingress_version }}/deploy/static/provider/baremetal/deploy.yaml
