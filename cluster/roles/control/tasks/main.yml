@@ -7,7 +7,7 @@
 
 - name: Initialize Kubernetes
   block:
-  - name: Initialize the Kubernetes cluster using kubeadm
+  - name: Initialize Kubernetes using kubeadm
     ansible.builtin.command: >
       kubeadm init --apiserver-advertise-address={{ host_ip }} --pod-network-cidr={{ pod_network_cidr }}
     args:
@@ -83,4 +83,64 @@
         name: gvisor
       handler: runsc
      EOF
+
+  - name: Kubernetes audit policies
+    when: "enable_audit|bool == true"
+    block:
+    - name: Install audit policy file
+      ansible.builtin.copy:
+        src: audit-policy.yml
+        dest: /etc/kubernetes/audit-policy.yaml
+        mode: u=rx,g=r,o=r
+  
+    - name: Enable audit policy
+      block:
+      - name: Enable audit policy - mount policy file
+        ansible.builtin.blockinfile:
+          path: /etc/kubernetes/manifests/kube-apiserver.yaml
+          insertafter: '^\s+volumes:$'
+          marker: '# {mark} audit-policy-volume'
+          block: |
+            {{ volumes|indent(2, first=true) }}
+        vars:
+          volumes: |
+           - name: audit
+             hostPath:
+               path: /etc/kubernetes/audit-policy.yaml
+               type: File
+           - name: audit-log
+             hostPath:
+               path: /var/log/kubernetes/audit/
+               type: DirectoryOrCreate
+  
+      - name: Enable audit policy - volume mounts
+        ansible.builtin.blockinfile:
+          path: /etc/kubernetes/manifests/kube-apiserver.yaml
+          insertafter: '^\s+volumeMounts:$'
+          marker: '# {mark} audit-policy-volume-mounts'
+          block: |
+            {{ mounts|indent(4, first=true) }}
+        vars:
+          mounts: |
+           - mountPath: /etc/kubernetes/audit-policy.yaml
+             name: audit
+             readOnly: true
+           - mountPath: /var/log/kubernetes/audit/
+             name: audit-log
+             readOnly: false
+  
+      - name: Enable audit policy - update options
+        ansible.builtin.blockinfile:
+          path: /etc/kubernetes/manifests/kube-apiserver.yaml
+          insertafter: '^\s+-\s+kube-apiserver$'
+          marker: '# {mark} audit-policy'
+          block: |
+            {{ options|indent(4, first=true) }}
+        vars:
+          options: |
+            - --audit-policy-file=/etc/kubernetes/audit-policy.yaml
+            - --audit-log-path=/var/log/kubernetes/audit/audit.log
+            - --audit-log-maxsize=10
+            - --audit-log-maxage=1
+            - --audit-log-maxbackup=5
 

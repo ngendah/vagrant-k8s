@@ -131,6 +131,8 @@ For additional details on these commands and others, consult [Vagrant documentat
 
 * [Falco](https://falco.org/docs/)
 
+* [Audit Policy](https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/)
+
 
 ## Alternatives
 
