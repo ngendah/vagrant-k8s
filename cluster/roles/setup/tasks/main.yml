@@ -112,3 +112,8 @@
     - name: Install Metrics server
       ansible.builtin.shell: kubectl apply -f metrics-server/
 
+  - name: Clean up after setup
+    ansible.builtin.file:
+      path: ~/.kube
+      state: absent
+
