@@ -36,10 +36,11 @@ Vagrant.configure("2") do |config|
           etc_hosts: etc_hosts,
           no_falco: true,
           no_gvisor: false,
-          no_gatekeeper: false,
+          no_gatekeeper: true,
           no_metrics_server: false,
-          no_dashboard: false,
+          no_dashboard: true,
           no_ipvs: false,
+          enable_audit: true,
         }
         ansible.groups = {
           'control': ['control01'],
