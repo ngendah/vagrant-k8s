@@ -115,11 +115,13 @@
       - containerd.io 
     notify: Disable Docker daemon
  
-  - name: Upload Containerd configuration
-    ansible.builtin.copy:
-      src: config.toml
-      dest: /etc/containerd/config.toml
-      mode: u=rwx,g=rx,o=rx
+  - name: Regenerate Containerd configuration
+    ansible.builtin.shell: |
+      {{ item }}
+    with_items:
+    - containerd config default > config.toml
+    - sed -i -E 's/(\s+SystemdCgroup\s+=\s+)false/\1true/g' config.toml
+    - sudo mv -f config.toml /etc/containerd/
     notify: Restart Containerd 
 
 - name: Install Kubernetes from apt repo
