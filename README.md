@@ -1,4 +1,4 @@
-Provision a Kubernetes cluster with Ansible and Vagrant
+Provision a Local Kubernetes cluster with Ansible and Vagrant
 ==============================================
 
 Why?
