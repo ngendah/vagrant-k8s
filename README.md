@@ -34,9 +34,7 @@ Ansible is not supported on Windows and the 'best' solution is to run [Vagrant a
 
 This may take a few minutes. Upon successful completion, a Kubernetes cluster will be running and accessible via the assigned private IP on port 6443.
 
-A kubeconfig file will be downloaded into the cluster/ directory. You can use it to authenticate and execute commands against the cluster.
-
-In addition, a copy of `kubeconfig` will have been created the cluster directory, `cluster/`. You can use it to authenticate and execute commands against the cluster.
+In addition, the privisioner will create a `kubeconfig` in the cluster directory, `cluster/`. You can use it to authenticate and execute commands against the cluster.
 
 For example, to check node status;
 
