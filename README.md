@@ -3,11 +3,11 @@ Provision a Kubernetes cluster with Ansible and Vagrant
 
 Why?
 
-* Want to test out different container runtimes.
+* To test out different container runtimes.
 
-* Want to test out tools such as IPVS, AppArmor, Falco e.tc.
+* To evaluate tools such as IPVS, AppArmor, Falco e.tc.
 
-* Want clear, understandable and extensible Ansible playbooks.
+* To use clear, understandable and extensible Ansible playbooks.
 
 ## Requirements:
 
@@ -24,7 +24,7 @@ Why?
 
 #### Windows
 
-Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant and Ansible](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_local) run the playbooks on the guest virtual machine.
+Ansible is not supported on Windows and the 'best' solution is to run [Vagrant and Ansible](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_local) on guest virtual machine.
 
 ## Getting started
 
@@ -32,9 +32,11 @@ Ansible is not supported on Windows and the 'best' solution is to allow [Vagrant
   vagrant up --provision --provider virtualbox
 ```
 
-This should take a short while, but upon successful completion you should have a cluster running, reachable via the assigned private ip, on port 6443.
+This may take a few minutes. Upon successful completion, a Kubernetes cluster will be running and accessible via the assigned private IP on port 6443.
 
-In addition, a copy of `kubeconfig` will have been downloaded into the cluster directory, `cluster/`. It can be used for authentication on the cluster for execution of commands.
+A kubeconfig file will be downloaded into the cluster/ directory. You can use it to authenticate and execute commands against the cluster.
+
+In addition, a copy of `kubeconfig` will have been created the cluster directory, `cluster/`. You can use it to authenticate and execute commands against the cluster.
 
 For example, to check node status;
 
@@ -91,7 +93,7 @@ For additional details on these commands and others, consult [Vagrant documentat
 * [Kubernetes dashboard](https://github.com/kubernetes/dashboard)
 
   In order to facilitate dashboard access the provisioner will create a dashboard html stub file on the cluster directory, `cluster`, together with a corresponding login token.
-  From a file browser you can double-click on the stub file to open the dashboard.
+  From a file browser double-click on the stub file to open the dashboard.
 
 #### Metrics
 
