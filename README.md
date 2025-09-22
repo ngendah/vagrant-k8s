@@ -24,7 +24,7 @@ Why?
 
 #### Windows
 
-Ansible is not supported on Windows and the 'best' solution is to run [Vagrant and Ansible](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_local) on guest virtual machine.
+Ansible is not supported on Windows and the 'best' solution is to run [Vagrant and Ansible](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_local) on a guest virtual machine.
 
 ## Getting started
 
